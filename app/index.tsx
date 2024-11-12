@@ -1,11 +1,44 @@
-import { Text, TextInput, SafeAreaView, ScrollView, StyleSheet, Button } from 'react-native';
+import { Text, TextInput, SafeAreaView, ScrollView, StyleSheet, Button, Alert, ToastAndroid } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Link } from 'expo-router';
-
+import { useState } from 'react';
+import axios from 'axios';
+const API_URL = 'http://10.10.50.221/CRUD_EasyUI/Api/login';
 
 export default function  Index() {
   const router = useRouter(); // Gunakan router untuk navigasi
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
+  const handleLogin = () => {
+    var bodyFormData = new FormData();
+    bodyFormData.append('nama', username);
+    bodyFormData.append('password', password);
+    axios({
+      method: "post",
+      url: API_URL,
+      data: bodyFormData,
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    .then(response => {
+      // Handle successful login
+      console.log(username, password);
+      console.log('Login successful', response.data);
+      if(response.data.status){
+        router.push('/(tabs)')
+        ToastAndroid.show('Berhasil Login!', ToastAndroid.SHORT);
+      }else{
+        Alert.alert(response.data.message)
+      }
+      
+      // Navigate to your app's main screen or set authentication state
+    })
+    .catch(error => {
+      // Handle login error
+      console.error('Login failed', error.response);
+      Alert.alert('Login Failed', 'Please check your credentials and try again.');
+    });
+  };
  
   return (
     <SafeAreaView style={styles.container}>
@@ -13,14 +46,25 @@ export default function  Index() {
         <Text style={styles.paragraph}>LOGIN</Text>
 
         <Text style={styles.paragraph2}>NAMA PENGGUNA</Text>
-        <TextInput style={styles.input} underlineColorAndroid="transparent" />
+        <TextInput 
+          value={username}
+          onChangeText={setUsername}
+          style={styles.input} 
+          underlineColorAndroid="transparent" />
 
         <Text style={styles.paragraph2}>KATA SANDI</Text>
-        <TextInput style={styles.input} underlineColorAndroid="transparent" secureTextEntry />
+        <TextInput 
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input} 
+          underlineColorAndroid="transparent" />
+        
 
         {/* Tombol Login */}
         <Button title="Login"
-          onPress={() => router.push('/(tabs)')}
+          // onPress={() => router.push('/(tabs)')}
+          onPress={handleLogin}
           />
 
         {/* Link untuk Daftar */}
