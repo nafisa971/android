@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import { Link } from 'expo-router';
 import { useState } from 'react';
 import axios from 'axios';
-const API_URL = 'http://10.10.50.221/CRUD_EasyUI/Api/login';
+const API_URL = 'http://10.10.70.33/CRUD_EasyUI/Api/login';
 
 export default function  Index() {
   const router = useRouter(); // Gunakan router untuk navigasi
@@ -12,32 +12,40 @@ export default function  Index() {
 
   const handleLogin = () => {
     var bodyFormData = new FormData();
-    bodyFormData.append('nama', username);
-    bodyFormData.append('password', password);
-    axios({
-      method: "post",
-      url: API_URL,
-      data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data" },
-    })
-    .then(response => {
-      // Handle successful login
-      console.log(username, password);
-      console.log('Login successful', response.data);
-      if(response.data.status){
-        router.push('/(tabs)')
-        ToastAndroid.show('Berhasil Login!', ToastAndroid.SHORT);
-      }else{
-        Alert.alert(response.data.message)
-      }
+    if (username == ""){
+      Alert.alert("Mohon isikan username")
+    } else if(password == ""){
+      Alert.alert("Mohon isikan password")
       
-      // Navigate to your app's main screen or set authentication state
-    })
-    .catch(error => {
-      // Handle login error
-      console.error('Login failed', error.response);
-      Alert.alert('Login Failed', 'Please check your credentials and try again.');
-    });
+    }else{
+      bodyFormData.append('nama', username);
+      bodyFormData.append('password', password);
+      axios({
+        method: "post",
+        url: API_URL,
+        data: bodyFormData,
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+      .then(response => {
+        // Handle successful login
+        console.log(username, password);
+        console.log('Login successful', response.data);
+        if(response.data.status){
+          router.push('/(tabs)')
+          ToastAndroid.show('Berhasil Login!', ToastAndroid.SHORT);
+        }else{
+          Alert.alert(response.data.message)
+        }
+        
+        // Navigate to your app's main screen or set authentication state
+      })
+      .catch(error => {
+        // Handle login error
+        console.error('Login failed', error.response);
+        Alert.alert('Login Failed', 'Please check your credentials and try again.');
+      });
+    }
+    
   };
  
   return (
